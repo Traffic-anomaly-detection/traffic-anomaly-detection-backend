@@ -2,11 +2,14 @@ import schedule
 import time
 import pandas as pd
 import numpy as np
+import requests
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
-PATH = os.getenv('PATH-WEB')
+PATH = os.getenv('PATH_WEB')
+LINE_URL = os.getenv('LINE_URL')
+LINE_TOKEN = os.getenv('LINE_TOKEN')
 df_km127 = pd.read_csv("./dataset/latlon_km127.csv")
 
 
@@ -34,11 +37,22 @@ def map_traffic_with_latlon(df):
     return df
     # return df
 
+
+def line_notify():
+    headers = {
+        'content-type':
+            'application/x-www-form-urlencoded',
+            'Authorization': 'Bearer '+ LINE_TOKEN
+    }
+    msg = input("Enter your name:")
+    r = requests.post(LINE_URL, headers=headers , data = {'message':msg})
+    print(r.text)
+
 # print(df_km127[(df_km127['rd']==1) & (df_km127['km']==815)]['lat'].item())
 
 
 # schedule.every(2).seconds.do(csv_file)
-schedule.every(2).minutes.do(csv_file)
+# schedule.every(2).minutes.do(csv_file)
 # schedule.every().hour.do(csv_file)
 # schedule.every().day.at("10:30").do(csv_file)
 # schedule.every(5).to(10).minutes.do(csv_file)
@@ -46,6 +60,7 @@ schedule.every(2).minutes.do(csv_file)
 # schedule.every().wednesday.at("13:15").do(csv_file)
 # schedule.every().minute.at(":17").do(csv_file)
 # csv_file()
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+line_notify()
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
