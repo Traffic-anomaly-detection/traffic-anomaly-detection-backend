@@ -1,3 +1,6 @@
+from firebase_admin import db
+from firebase_admin import credentials
+import firebase_admin
 import schedule
 import time
 import pandas as pd
@@ -7,10 +10,37 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+# firebaseConfig = {
+#   apiKey: "AIzaSyArYzvqFew8nxMdyN4RvDfZ4Pe_lFY9Y4w",
+#   authDomain: "traffic-anomaly-detection.firebaseapp.com",
+#   databaseURL: "https://traffic-anomaly-detection-default-rtdb.asia-southeast1.firebasedatabase.app",
+#   projectId: "traffic-anomaly-detection",
+#   storageBucket: "traffic-anomaly-detection.appspot.com",
+#   messagingSenderId: "1010599694991",
+#   appId: "1:1010599694991:web:d2c3013e28f7ab1b6716fa",
+#   measurementId: "G-VR7QWSMPR8"
+# };
+
 PATH = os.getenv('PATH_WEB')
 LINE_URL = os.getenv('LINE_URL')
 LINE_TOKEN = os.getenv('LINE_TOKEN')
+
+cred = credentials.Certificate("firebase-sdk.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://traffic-anomaly-detection-default-rtdb.asia-southeast1.firebasedatabase.app/'
+})
+
+
 df_km127 = pd.read_csv("./dataset/latlon_km127.csv")
+
+ref = db.reference('Accident')
+data = {
+    'coor': {
+        'lat': 113.001,
+        'lon': 114.101
+    }
+}
+ref.push(data)
 
 
 def csv_file():
@@ -23,6 +53,7 @@ def csv_file():
     df_traffic_wlatlon = map_traffic_with_latlon(df_traffic)
     map_traffic_with_latlon(df_traffic)
     print(df_traffic_wlatlon)
+    line_notify()
 
 
 def filter_traffic(df):
@@ -42,17 +73,19 @@ def line_notify():
     headers = {
         'content-type':
             'application/x-www-form-urlencoded',
-            'Authorization': 'Bearer '+ LINE_TOKEN
+            'Authorization': 'Bearer ' + LINE_TOKEN
     }
-    msg = input("Enter your name:")
-    r = requests.post(LINE_URL, headers=headers , data = {'message':msg})
+    # msg = input("Enter your name:")
+    msg = "Send every 2 minutes"
+    r = requests.post(LINE_URL, headers=headers, data={'message': msg})
     print(r.text)
 
 # print(df_km127[(df_km127['rd']==1) & (df_km127['km']==815)]['lat'].item())
 
 
 # schedule.every(2).seconds.do(csv_file)
-# schedule.every(2).minutes.do(csv_file)
+schedule.every(2).minutes.do(csv_file)
+# schedule.every(2).minutes.do(line_notify)
 # schedule.every().hour.do(csv_file)
 # schedule.every().day.at("10:30").do(csv_file)
 # schedule.every(5).to(10).minutes.do(csv_file)
@@ -60,7 +93,7 @@ def line_notify():
 # schedule.every().wednesday.at("13:15").do(csv_file)
 # schedule.every().minute.at(":17").do(csv_file)
 # csv_file()
-line_notify()
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
+# line_notify()
+while True:
+    schedule.run_pending()
+    time.sleep(1)
