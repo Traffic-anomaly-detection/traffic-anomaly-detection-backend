@@ -1,4 +1,8 @@
-/node_modules
+# Dependency directories
+node_modules/
 
+# dotenv environment variable files
 .env
+
+# Optional npm cache directory
 package-lock.json
