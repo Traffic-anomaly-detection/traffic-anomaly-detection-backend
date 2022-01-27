@@ -14,8 +14,11 @@ const pool = new Pool({
   host: db_host,
   port: db_port,
   database: db_name,
-  ssl: {
-    /* <----- Add SSL option */ rejectUnauthorized: false,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
   },
 });
 
