@@ -15,11 +15,8 @@ const pool = new Pool({
   port: db_port,
   database: db_name,
   dialect: "postgres",
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
+  ssl: {
+    rejectUnauthorized: false,
   },
 });
 
