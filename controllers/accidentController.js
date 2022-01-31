@@ -19,24 +19,12 @@ exports.getAccidentByParam = async (req, res) => {
 
 exports.createAccident = async (req, res) => {
   try {
-    const accidentData = {
-      road_no: req.body.road_no,
-      km: req.body.km,
-      lat: req.body.lat,
-      lon: req.body.lon,
-      date_time: req.body.date_time,
-    };
+    const { road_no, km, lat, lon, date_time } = req.body;
     const newAcc = await pool.query(
-      "INSERT INTO accident (road_no, km, lat, lon, date_time) VALUES($1,$2,$3,$4,$5)",
-      [
-        accidentData.road_no,
-        accidentData.km,
-        accidentData.lat,
-        accidentData.lon,
-        accidentData.date_time,
-      ]
+      "INSERT INTO accident (road_no, km, lat, lon, date_time) VALUES($1,$2,$3,$4,$5) RETURNING *",
+      [road_no, km, lat, lon, date_time]
     );
-    res.json(newAcc);
+    res.json(newAcc.rows[0]);
   } catch (err) {
     console.log(err.message);
   }
