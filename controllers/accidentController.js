@@ -21,7 +21,7 @@ exports.createAccident = async (req, res) => {
   try {
     const { road_no, km, direction, lat, lon, date_time } = req.body;
     const newAcc = await pool.query(
-      "INSERT INTO accident (road_no, km, direction, lat, lon, date_time) VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
+      "INSERT INTO accident (road_no, km, direction, inflow_units, outflow_units, samecell_units, all_units, lat, lon, date_time) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *",
       [road_no, km, direction, lat, lon, date_time]
     );
     res.json(newAcc.rows[0]);
