@@ -9,6 +9,7 @@ CREATE TABLE accident(
   outflow_units INT NOT NULL,
   samecell_units INT NOT NULL,
   all_units INT NOT NULL,
+  avg_speed INT NOT NULL,
   lat FLOAT NOT NULL,
   lon FLOAT NOT NULL,
   date_time date NOT NULL,
