@@ -1,4 +1,5 @@
 const pool = require("../configs/db");
+const format = require("pg-format");
 
 exports.getAccident = async (req, res) => {
   try {
@@ -49,6 +50,23 @@ exports.createAccident = async (req, res) => {
       ]
     );
     res.json(newAcc.rows[0]);
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+exports.bulkInsert = async (req, res) => {
+  const sql =
+    "INSERT INTO accident (road_no, km, direction, inflow_units, outflow_units, samecell_units, all_units, avg_speed, lat, lon, date_time) VALUES ?";
+  const values = req.body;
+  try {
+    const ress = await pool.query(
+      format(
+        `INSERT INTO accident (road_no, km, direction, inflow_units, outflow_units, samecell_units, all_units, avg_speed, lat, lon, date_time) VALUES %L RETURNING *`,
+        values
+      )
+    );
+    res.json(ress.rows);
   } catch (err) {
     console.log(err.message);
   }
