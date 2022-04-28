@@ -1,7 +1,7 @@
 const pool = require("../configs/db");
 const format = require("pg-format");
 
-const dbname = "incident"
+const dbname = "incident";
 
 exports.getAccident = async (req, res) => {
   try {
@@ -27,6 +27,17 @@ exports.getAccidentByParam = async (req, res) => {
     const someAccident = await pool.query(`SELECT * FROM ${dbname} LIMIT $1`, [
       params,
     ]);
+    res.json(someAccident.rows);
+  } catch {}
+};
+
+exports.getAccidentByDatetimeLimit = async (req, res) => {
+  try {
+    const params = req.params.id;
+    const someAccident = await pool.query(
+      `SELECT * FROM ${dbname} ORDER BY date_time DESC  LIMIT $1`,
+      [params]
+    );
     res.json(someAccident.rows);
   } catch {}
 };
@@ -69,8 +80,7 @@ exports.createAccident = async (req, res) => {
 };
 
 exports.bulkInsert = async (req, res) => {
-  const sql =
-    `INSERT INTO ${dbname} (road_no, km, direction, inflow_units, outflow_units, samecell_units, all_units, avg_speed, lat, lon, date_time) VALUES ?`;
+  const sql = `INSERT INTO ${dbname} (road_no, km, direction, inflow_units, outflow_units, samecell_units, all_units, avg_speed, lat, lon, date_time) VALUES ?`;
   const values = req.body;
   try {
     const ress = await pool.query(
